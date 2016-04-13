@@ -23,50 +23,35 @@ Kernel( Node* g_graph_nodes, int* g_graph_edges, bool* g_graph_mask, bool* g_upd
 {
 	int tid = blockIdx.x*MAX_THREADS_PER_BLOCK + threadIdx.x;
 	
-	//if (tid == 0)
-	//{
-	//	printf("Thread Id = %d\n", tid);
-	//}	
-
-	//if (tid == 0)
-	//{
-		printf("Thread Id = %d - Before Check and Loop\n", tid);
-		printf("Thread Id = %d - g_graph_mask = %d\n", tid, g_graph_mask[tid]);
-		printf("Thread Id = %d - Number of Nodes = %d\n", tid, no_of_nodes);
-	//}
-
+	printf("Kernel#1 - Thread Id = %d - Before Check and Loop\n", tid);
+	printf("Kernel#1 - Thread Id = %d - Graph Mask (g_graph_mask[tid]) = %d\n", tid, g_graph_mask[tid]);
+	printf("Kernel#1 - Thread Id = %d - Number of Nodes (no_of_nodes) = %d\n", tid, no_of_nodes);
+	
 	if( tid<no_of_nodes && g_graph_mask[tid])
 	{
 		g_graph_mask[tid]=false;
 
-		//if (tid > 0)
-		//{
-			printf("Thread Id = %d - Start = %d\n", tid, g_graph_nodes[tid].starting);
-			printf("Thread Id = %d - Count = %d\n", tid, (g_graph_nodes[tid].no_of_edges + g_graph_nodes[tid].starting));
-		//}
-
+		printf("Kernel#1 - Thread Id = %d - After Check\n", tid);
+		printf("Kernel#1 - Thread Id = %d - Start (g_graph_nodes[tid].starting) = %d\n", tid, g_graph_nodes[tid].starting);
+		printf("Kernel#1 - Thread Id = %d - Count (g_graph_nodes[tid].no_of_edges + g_graph_nodes[tid].starting) = %d\n",
+		 tid, (g_graph_nodes[tid].no_of_edges + g_graph_nodes[tid].starting));
+		
 		for(int i=g_graph_nodes[tid].starting; i<(g_graph_nodes[tid].no_of_edges + g_graph_nodes[tid].starting); i++)
-			{
+		{
 			int id = g_graph_edges[i];
 
-			//if (tid == 0)
-			//{
-				printf("Thread Id = %d - Edge Id = %d\n", tid, g_graph_edges[i]);
-				printf("Thread Id = %d - Visited Flag = %d\n", tid, g_graph_visited[id]);
-			//}
+			printf("Kernel#2 - Thread Id = %d - Enter Loop\n", tid);
+			printf("Kernel#1 - Thread Id = %d - Edge Id (g_graph_edges[i]) = %d\n", tid, g_graph_edges[i]);
+			printf("Kernel#1 - Thread Id = %d - Visited Flag (g_graph_visited[id]) = %d\n", tid, g_graph_visited[id]);
 
 			if(!g_graph_visited[id])
-				{
+			{
 				g_cost[id]=g_cost[tid]+1;
 				g_updating_graph_mask[id]=true;
 
-				//if (tid == 0)
-				//{
-					printf("Thread Id = %d - Cost = %d\n", tid, g_cost[id]);
-				//} 				
-
-				}
+				printf("Kernel#1 - Thread Id = %d - Cost (g_cost[id]) = %d\n", tid, g_cost[id]);
 			}
+		}
 	}
 }
 
