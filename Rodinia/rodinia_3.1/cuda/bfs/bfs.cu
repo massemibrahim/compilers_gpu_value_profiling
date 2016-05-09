@@ -20,7 +20,6 @@
 #include <string.h>
 #include <math.h>
 #include <cuda.h>
-#include "timer.h"  
 
 #define MAX_THREADS_PER_BLOCK 512
 
@@ -134,6 +133,11 @@ void BFSGraph( int argc, char** argv)
 
 	printf("Read File\n");
 
+	// Create CUDA events
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+
 	//Copy the Node list to device memory
 	Node* d_graph_nodes;
 	cudaMalloc( (void**) &d_graph_nodes, sizeof(Node)*no_of_nodes) ;
@@ -179,11 +183,8 @@ void BFSGraph( int argc, char** argv)
 	dim3  grid( num_of_blocks, 1, 1);
 	dim3  threads( num_of_threads_per_block, 1, 1);
 
-	//Timer to measure kernel runtime
-	timer kernel_timer;
-	double kernel_time = 0.0;		
-	kernel_timer.reset();
-	kernel_timer.start();
+	// Start event
+	cudaEventRecord(start);
 
 	int k=0;
 	printf("Start traversing the tree\n");
@@ -207,15 +208,19 @@ void BFSGraph( int argc, char** argv)
 	}
 	while(stop);
 
-	// Stop the timer
-	kernel_timer.stop();
-	kernel_time = kernel_timer.getTimeInSeconds();
+	// Stop event
+	cudaEventRecord(stop);
 
 	printf("Kernel Executed %d times\n",k);
-	printf("Kernel time(s): %d\n", kernel_time);
 
 	// copy result from device to host
 	cudaMemcpy( h_cost, d_cost, sizeof(int)*no_of_nodes, cudaMemcpyDeviceToHost) ;
+
+	// Synchronize stop event
+	cudaEventSynchronize(stop);
+	float milliseconds = 0;
+	cudaEventElapsedTime(&milliseconds, start, stop);
+	printf("Kernel time(s): %f\n", milliseconds);
 
 	//Store the result into a file
 	FILE *fpo = fopen("result.txt","w");
