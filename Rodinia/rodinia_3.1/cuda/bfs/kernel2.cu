@@ -23,9 +23,9 @@ Kernel2( bool* g_graph_mask, bool *g_updating_graph_mask, bool* g_graph_visited,
 {
 	int tid = blockIdx.x*MAX_THREADS_PER_BLOCK + threadIdx.x;
 	
-	printf("Kernel#2 - Thread Id = %d - Before Check\n", tid);
-	printf("Kernel#2 - Thread Id = %d - Number of Nodes (no_of_nodes) = %d\n", tid, no_of_nodes);
-	printf("Kernel#2 - Thread Id = %d - Update Graph Mask (g_updating_graph_mask[tid]) = %d\n", tid, g_updating_graph_mask[tid]);
+	// printf("Kernel#2 - Thread Id = %d - Before Check\n", tid);
+	// printf("Kernel#2 - Thread Id = %d - Number of Nodes (no_of_nodes) = %d\n", tid, no_of_nodes);
+	// printf("Kernel#2 - Thread Id = %d - Update Graph Mask (g_updating_graph_mask[tid]) = %d\n", tid, g_updating_graph_mask[tid]);
 
 	if( tid<no_of_nodes && g_updating_graph_mask[tid])
 	{
@@ -34,11 +34,11 @@ Kernel2( bool* g_graph_mask, bool *g_updating_graph_mask, bool* g_graph_visited,
 		*g_over=true;
 		g_updating_graph_mask[tid]=false;
 
-		printf("Kernel#2 - Thread Id = %d - After Check\n", tid);
-		printf("Kernel#2 - Thread Id = %d - Update Graph Mask (g_updating_graph_mask[tid]) = %d\n", tid, g_updating_graph_mask[tid]);
-		printf("Kernel#2 - Thread Id = %d - Visited Flag (g_graph_visited[tid]) = %d\n", tid, g_graph_visited[tid]);
-		printf("Kernel#2 - Thread Id = %d - Over Flag (g_over) = %d\n", tid, g_over);
-		printf("Kernel#2 - Thread Id = %d - Graph Mask (g_graph_mask[tid]) = %d\n", tid, g_graph_mask[tid]);
+		// printf("Kernel#2 - Thread Id = %d - After Check\n", tid);
+		// printf("Kernel#2 - Thread Id = %d - Update Graph Mask (g_updating_graph_mask[tid]) = %d\n", tid, g_updating_graph_mask[tid]);
+		// printf("Kernel#2 - Thread Id = %d - Visited Flag (g_graph_visited[tid]) = %d\n", tid, g_graph_visited[tid]);
+		// printf("Kernel#2 - Thread Id = %d - Over Flag (g_over) = %d\n", tid, g_over);
+		// printf("Kernel#2 - Thread Id = %d - Graph Mask (g_graph_mask[tid]) = %d\n", tid, g_graph_mask[tid]);
 	}
 }
 
