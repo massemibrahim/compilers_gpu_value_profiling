@@ -43,7 +43,7 @@ Kernel( Node* g_graph_nodes, int* g_graph_edges, bool* g_graph_mask, bool* g_upd
 			int id = g_graph_edges[i];
 
 			// printf("Kernel#1 - Thread Id = %d - Enter Loop\n", tid);
-			printf("Kernel#1 - Thread Id = %d - Edge Id (g_graph_edges[i]) = %d\n", tid, g_graph_edges[i]);
+			// printf("Kernel#1 - Thread Id = %d - Edge Id (g_graph_edges[i]) = %d\n", tid, g_graph_edges[i]);
 			// printf("Kernel#1 - Thread Id = %d - Visited Flag (g_graph_visited[id]) = %d\n", tid, g_graph_visited[id]);
 
 			if(!g_graph_visited[id])
