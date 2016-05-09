@@ -134,9 +134,9 @@ void BFSGraph( int argc, char** argv)
 	printf("Read File\n");
 
 	// Create CUDA events
-	cudaEvent_t start, stop;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
+	cudaEvent_t start_event, stop_event;
+	cudaEventCreate(&start_event);
+	cudaEventCreate(&stop_event);
 
 	//Copy the Node list to device memory
 	Node* d_graph_nodes;
@@ -184,7 +184,7 @@ void BFSGraph( int argc, char** argv)
 	dim3  threads( num_of_threads_per_block, 1, 1);
 
 	// Start event
-	cudaEventRecord(start);
+	cudaEventRecord(start_event);
 
 	int k=0;
 	printf("Start traversing the tree\n");
@@ -209,7 +209,7 @@ void BFSGraph( int argc, char** argv)
 	while(stop);
 
 	// Stop event
-	cudaEventRecord(stop);
+	cudaEventRecord(stop_event);
 
 	printf("Kernel Executed %d times\n",k);
 
@@ -217,9 +217,9 @@ void BFSGraph( int argc, char** argv)
 	cudaMemcpy( h_cost, d_cost, sizeof(int)*no_of_nodes, cudaMemcpyDeviceToHost) ;
 
 	// Synchronize stop event
-	cudaEventSynchronize(stop);
+	cudaEventSynchronize(stop_event);
 	float milliseconds = 0;
-	cudaEventElapsedTime(&milliseconds, start, stop);
+	cudaEventElapsedTime(&milliseconds, start_event, stop_event);
 	printf("Kernel time(s): %f\n", milliseconds);
 
 	//Store the result into a file
