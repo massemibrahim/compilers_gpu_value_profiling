@@ -20,6 +20,7 @@
 #include <string.h>
 #include <math.h>
 #include <cuda.h>
+#include "timer.h"  
 
 #define MAX_THREADS_PER_BLOCK 512
 
@@ -178,6 +179,12 @@ void BFSGraph( int argc, char** argv)
 	dim3  grid( num_of_blocks, 1, 1);
 	dim3  threads( num_of_threads_per_block, 1, 1);
 
+	//Timer to measure kernel runtime
+	timer kernel_timer;
+	double kernel_time = 0.0;		
+	kernel_timer.reset();
+	kernel_timer.start();
+
 	int k=0;
 	printf("Start traversing the tree\n");
 	bool stop;
@@ -200,8 +207,12 @@ void BFSGraph( int argc, char** argv)
 	}
 	while(stop);
 
+	// Stop the timer
+	kernel_timer.stop();
+	kernel_time = kernel_timer.getTimeInSeconds();
 
 	printf("Kernel Executed %d times\n",k);
+	printf("Kernel time(s): %d\n", kernel_time);
 
 	// copy result from device to host
 	cudaMemcpy( h_cost, d_cost, sizeof(int)*no_of_nodes, cudaMemcpyDeviceToHost) ;
