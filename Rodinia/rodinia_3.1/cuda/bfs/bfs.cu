@@ -20,6 +20,10 @@
 #include <string.h>
 #include <math.h>
 #include <cuda.h>
+#include <vector>
+#include <set>
+
+using namespace std;
 
 #define MAX_THREADS_PER_BLOCK 512
 
@@ -53,6 +57,24 @@ void Usage(int argc, char**argv){
 
 fprintf(stderr,"Usage: %s <input_file>\n", argv[0]);
 
+}
+
+int distict_abs(const vector<int>& v)
+{
+   std::set<int> distinct_container;
+
+   for(auto curr_int = v.begin(), end = v.end(); // no need to call v.end() multiple times
+       curr_int != end;
+       ++curr_int)
+   {
+       // std::set only allows single entries
+       // since that is what we want, we don't care that this fails 
+       // if the second (or more) of the same value is attempted to 
+       // be inserted.
+       distinct_container.insert(abs(*curr_int));
+   }
+
+   return distinct_container.size();
 }
 ////////////////////////////////////////////////////////////////////////////////
 //Apply BFS on a Graph using CUDA
@@ -127,6 +149,10 @@ void BFSGraph( int argc, char** argv)
 		fscanf(fp,"%d",&cost);
 		h_graph_edges[i] = id;
 	}
+	std::vector<int> h_graph_edges_vector(h_graph_edges, h_graph_edges + sizeof h_graph_edges / sizeof h_graph_edges[0]);
+
+	int distinct = distict_abs(h_graph_edges_vector);
+	printf("Distinct Values = %d\n", distinct);
 
 	if(fp)
 		fclose(fp);    
