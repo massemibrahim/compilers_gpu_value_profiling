@@ -20,25 +20,36 @@ bpnn_layerforward_CUDA(float *input_cuda,
    int by = blockIdx.y;
    int tx = threadIdx.x;
    int ty = threadIdx.y;
+   // printf("Kernel#1 - Thread Id = %d/%d/%d\n", by, tx, ty);
 
    int index =  ( hid + 1 ) * HEIGHT * by + ( hid + 1 ) * ty + tx + 1 + ( hid + 1 ) ;  
+   printf("Kernel#1 - Thread Id = %d/%d/%d - Index (index) = %d\n", by, tx, ty, index);
 
    int index_in = HEIGHT * by + ty + 1;
-   
+   printf("Kernel#1 - Thread Id = %d/%d/%d - Index In (index_in) = %d\n", by, tx, ty, index_in);
+
    __shared__ float input_node[HEIGHT];
    __shared__ float weight_matrix[HEIGHT][WIDTH];
 
 
    if ( tx == 0 )
-   input_node[ty] = input_cuda[index_in] ;
+   input_node[ty] = input_cuda[index_in];
    
+   printf("Kernel#1 - Thread Id = %d/%d/%d - Input CUDA (input_cuda[index_in]) = %d\n", by, tx, ty, input_cuda[index_in]);
+   printf("Kernel#1 - Thread Id = %d/%d/%d - Input Node (input_node[ty]) = %d\n", by, tx, ty, input_node[ty]);
+
    __syncthreads();
 
    weight_matrix[ty][tx] = input_hidden_cuda[index];
 
+   printf("Kernel#1 - Thread Id = %d/%d/%d - Input Hidden CUDA (input_hidden_cuda[index]) = %d\n", by, tx, ty, input_hidden_cuda[index]);
+   printf("Kernel#1 - Thread Id = %d/%d/%d - Weight Matrix (First) (weight_matrix[ty][tx]) = %d\n", by, tx, ty, weight_matrix[ty][tx]);   
+
    __syncthreads();
    
    weight_matrix[ty][tx] = weight_matrix[ty][tx] * input_node[ty];
+
+   printf("Kernel#1 - Thread Id = %d/%d/%d - Weight Matrix (Second) (weight_matrix[ty][tx]) = %d\n", by, tx, ty, weight_matrix[ty][tx]);   
 
    __syncthreads();   
    
@@ -48,6 +59,8 @@ bpnn_layerforward_CUDA(float *input_cuda,
 
 	   if( ty % power_two == 0 )
 	   weight_matrix[ty][tx] = weight_matrix[ty][tx] + weight_matrix[ty + power_two/2][tx];
+
+      printf("Kernel#1 - Thread Id = %d/%d/%d - Weight Matrix (Third) (weight_matrix[ty][tx]) = %d\n", by, tx, ty, weight_matrix[ty][tx]);   
 
 	   __syncthreads();
 
@@ -73,6 +86,8 @@ bpnn_layerforward_CUDA(float *input_cuda,
 
    if ( tx == 0 ) {
 	   hidden_partial_sum[by * hid + ty] = weight_matrix[tx][ty];
+
+      printf("Kernel#1 - Thread Id = %d/%d/%d - Hidden Partial Sum (hidden_partial_sum[by * hid + ty]) = %d\n", by, tx, ty, hidden_partial_sum[by * hid + ty]);   
    }
 
 }
